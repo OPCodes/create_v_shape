@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        #box {
+            margin-top: 10px;
+            position: relative;
+        }
+
+        #box div {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            line-height: 90px;
+            border: 5px solid #000;
+            border-radius: 10px;
+            background: blue;
+            text-align: center;
+            font-size: 40px;
+            color: #fff;
+        }
+    </style>
+    <script src="tools.js"></script>
+    <script>
+        /*
+            需求：1.点击创建DIV，生成n个div，n可以自己设定，支持奇数和偶数
+                  2.点击方向转换，每点击一次转换一个方向
+                  3.隐藏DIV让生成的元素隐藏
+            注意：此效果的关键在于把握好DIVleft值和top值的变化规律，推导出变化规律即可解决，但是也要注意奇数和偶数之间的差异，奇数OK的时候，偶数有可能出现Bug。
+        */
+        window.onload = function (){
+
+            var text = wTools.$("#text");  // 调用tools.js中的WTools下封装的$方法获取元素
+            var btnCreate = wTools.$("#btnCreate");
+            var btnSwitch = wTools.$("#btnSwitch");
+            console.log(btnSwitch);
+            var btnHide = wTools.$("#btnHide");
+            var btnReset = wTools.$("#btnReset");
+            var box = wTools.$("#box");
+            var aDiv = wTools.$("div",box);
+            var n = 0;
+
+            // 点击创建DIV，然后生成几个DIV
+            btnCreate.onclick = function (){
+                n = 0;
+                var val = parseInt(text.value);       // val为字符串，需要转换成数字
+                var str = "";
+                for( var i = 0; i < val; i++ ){   // 生成n个DIV
+                    str += '<div>'+ (i+1) +'</div>';
+                }
+                box.innerHTML = str;        // 生成的DIV添加到box中
+                for( var i = 0; i < aDiv.length; i++ ){   // 循环所有的div，添加left和top值，形成V字形
+                    aDiv[i].style.left = 10 + 100 * i + "px";   // left值从左到右递增
+                    if( i < Math.ceil(aDiv.length/2) ){         // 当小于一半时
+                        aDiv[i].style.top = i * 100 + "px";     // left值递增
+                    } else {                              // 大于一半时           
+                        aDiv[i].style.top = (aDiv.length - i - 1) * 100 + "px";    
+                    }
+                }
+                n++;   // 并让n++，用n=1代表V字形
+                text.value = "";    // 点击完创建DIV，让input输入框清空
+            }
+
+            // 点击方向转换，让V的方向发生改变
+            btnSwitch.onclick = function (){
+
+                for( var i = 0; i < aDiv.length; i++ ){
+                    if( n === 1 ){  // 向左的V字形
+                        aDiv[i].style.top = 10 + 100 * i + "px";  // top值随着i的递增而递增
+                        if( i < Math.ceil(aDiv.length/2) ){   // 小于奇数或者偶数的一半
+                            aDiv[i].style.left = (Math.ceil(aDiv.length/2) - i - 1 ) * 100 + "px";  // left值小于一半递减
+                        } else {
+                            aDiv[i].style.left = (i - Math.floor(aDiv.length/2)) * 100 + "px";    // left值大于一半递增
+                        }
+                    } else if ( n === 2 ){  // 向上的V字形
+                        aDiv[i].style.left = 10 + 100 * i + "px";  // left值递增
+                        if( i < Math.ceil(aDiv.length/2) ){
+                            aDiv[i].style.top = (Math.ceil(aDiv.length/2) - i - 1) * 100 + "px";  // 小于一半时，递减
+                        } else {
+                            aDiv[i].style.top = (i - Math.floor(aDiv.length/2)) * 100 + "px";     // 大于一半时，递增
+                        }
+                    } else if ( n === 3 ){  // 向右的V字形
+                        aDiv[i].style.top = 10 + 100 * i + "px";   // top值递增
+                        if( i < Math.ceil(aDiv.length/2) ){         
+                            aDiv[i].style.left = i * 100 + "px";   // left值在小于一半时，递增
+                        } else {            
+                            aDiv[i].style.left = (aDiv.length - i - 1) * 100 + "px";  //  left值在大于一半时，递减
+                        }
+                    } else {   // V字形
+                            aDiv[i].style.left = 10 + 100 * i + "px";   // left值递增
+                        if( i < Math.ceil(aDiv.length/2) ){         
+                            aDiv[i].style.top = i * 100 + "px";  // top值先递增  
+                        } else {                                   
+                            aDiv[i].style.top = (aDiv.length - i - 1) * 100 + "px";  // 大于一半递减
+                        }
+                    }
+                }
+                n++;     // 每点击一次转换，让n++
+                if( n > 4 ){
+                    n = 1;
+                }
+            }
+
+            // 点击隐藏DIV
+            btnHide.onclick = function (){
+                box.innerHTML = "";
+                n = 0;   // 隐藏DIV，让n初始化
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <input type="text" id="text" />
+    <input type="button" id="btnCreate" value="创建DIV" />
+    <input type="button" id="btnSwitch" value="方向转换" />
+    <input type="button" id="btnHide" value="隐藏DIV" />
+    <div id="box"></div>
+</body>
+</html>
+    
